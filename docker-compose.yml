@@ -1,0 +1,48 @@
+version: '3'
+
+services:
+  backend:
+    container_name: DockerBack
+    image: keyroz/backend
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - 3000:3000
+    depends_on:
+      - mongodb
+    networks:
+      - mongodb_netwok
+  
+  frontend:
+    container_name: DockerFront
+    image: keyroz/frontend
+    build: 
+      context: ./frontend
+      dockerfile: Dockerfile
+    links:
+      - backend
+    ports:
+      - 4000:80
+    depends_on:
+      - backend
+    networks:
+      - mongodb_netwok
+  
+  mongodb:
+    container_name: MongoDB
+    image: mongo:latest
+    volumes:
+      - mongodb_data:/var/lib/mysql
+    ports:
+      - 27017:27017
+    networks:
+      - mongodb_netwok
+
+volumes:
+  mongodb_data:
+
+networks:
+  mongodb_netwok:
+    name: mongodb_netwok
+    driver: bridge
